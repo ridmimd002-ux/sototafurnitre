@@ -1,0 +1,6 @@
+{
+  "name": "Sotota Furniture & Electronics",
+  "description": "Official online store of Sotota Furniture & Electronics - Premium furniture, electronics, and clothing e-commerce in Kishoreganj, Bangladesh.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

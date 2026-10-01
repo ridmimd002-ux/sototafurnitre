@@ -1,0 +1,73 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.uid == 'jawGRLgtOBNKX75rKXap6Jnr3P22' ||
+        request.auth.token.email == 'monsadbinridmi1292@gmail.com' ||
+        request.auth.token.admin == true
+      );
+    }
+    
+    // Products: Public read; Admin write
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Categories: Public read; Admin write
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Homepage Banners: Public read; Admin write
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Delivery Zones: Public read; Admin write
+    match /deliveryZones/{zoneId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Coupons: Public read for code validation; Admin write
+    match /coupons/{couponId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Store Settings: Public read; Admin write
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Orders: Anyone can create (supports Guest Checkout); Customers read own; Admin manages all
+    match /orders/{orderId} {
+      allow create: if true;
+      allow read: if isAdmin() || (request.auth != null && resource.data.customerId == request.auth.uid);
+      allow update, delete: if isAdmin();
+    }
+
+    // Customer Reviews: Public read approved only; Any user create as unapproved; Admin moderates
+    match /reviews/{reviewId} {
+      allow read: if resource.data.isApproved == true || isAdmin();
+      allow create: if request.resource.data.isApproved == false;
+      allow update, delete: if isAdmin();
+    }
+
+    // User accounts
+    match /users/{userId} {
+      allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+
+    // Audit logs: Admin only
+    match /auditLogs/{logId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
